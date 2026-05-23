@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light dark;
+  --bg-dark: #0a0a0a;
+  --bg-light: #f8f9fa;
+  --text-dark: #1a1a1a;
+  --text-light: #ffffff;
+}
+
+body {
+  background-color: light-dark(var(--bg-light), var(--bg-dark));
+  color: light-dark(var(--text-dark), var(--text-light));
+  @apply font-sans antialiased transition-colors duration-300;
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* Override for class-based theme switching */
+.light {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-dark;
+}
+
+.light ::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-neutral-800 rounded-full;
+}
+
+.light ::-webkit-scrollbar-thumb {
+  @apply bg-gray-300;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-neutral-700;
+}
+
+.light ::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
+}
+
+/* Netflix-style horizontal scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Slim scrollbar for small areas */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-primary/20 rounded-full hover:bg-primary/40;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+/* Hide chat and back-to-top when trailer modal is open */
+body.trailer-modal-open .support-chat-container,
+body.trailer-modal-open .back-to-top-button {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
