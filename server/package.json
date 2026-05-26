@@ -4,9 +4,9 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
+    "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "ts-node-dev --respawn --transpile-only server.ts",
-    "build": "tsc"
+    "dev": "nodemon server.ts"
   },
   "keywords": [],
   "author": "",
