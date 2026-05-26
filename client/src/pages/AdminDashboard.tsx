@@ -602,19 +602,19 @@ const AdminDashboard = () => {
       <div className="container mx-auto px-4 md:px-10">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-          <div>
-            <h1 className="text-4xl font-black tracking-tighter uppercase mb-2">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 md:mb-12">
+          <div className="text-center md:text-left">
+            <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase mb-2">
               Admin<span className="text-primary">Zone</span>
             </h1>
-            <p className="text-neutral-500 font-bold uppercase tracking-[0.2em] text-[10px]">
+            <p className="text-neutral-500 font-bold uppercase tracking-[0.2em] text-[9px] md:text-[10px]">
               {t('admin_system')}
             </p>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
           {statItems.map((item: any, i: number) => (
             <motion.button
               key={i}
@@ -624,21 +624,21 @@ const AdminDashboard = () => {
               whileHover={{ scale: 1.02, y: -5 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setActiveQuickView(item.id)}
-              className={`p-8 rounded-[2rem] border text-left transition-all relative group overflow-hidden ${
+              className={`p-5 md:p-8 rounded-2xl md:rounded-[2rem] border text-left transition-all relative group overflow-hidden ${
                 theme === 'dark' ? 'bg-white/5 border-white/5 hover:bg-white/[0.08]' : 'bg-white border-gray-100 shadow-xl hover:shadow-2xl'
               }`}
             >
-              <div className="flex items-center justify-between mb-4 relative z-10">
-                <div className={`p-3 rounded-xl bg-white/5 ${item.color}`}>
-                  <item.icon size={20} />
+              <div className="flex items-center justify-between mb-2 md:mb-4 relative z-10">
+                <div className={`p-2 md:p-3 rounded-lg md:rounded-xl bg-white/5 ${item.color}`}>
+                  <item.icon size={16} md:size={20} />
                 </div>
                 <FiArrowUpRight className="text-neutral-500 group-hover:text-primary group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
               </div>
-              <h4 className="text-3xl font-black tracking-tighter mb-1 relative z-10">{item.value}</h4>
-              <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 relative z-10">{item.label}</p>
+              <h4 className="text-xl md:text-3xl font-black tracking-tighter mb-0.5 md:mb-1 relative z-10">{item.value}</h4>
+              <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-neutral-500 relative z-10">{item.label}</p>
               
               {/* Background Glow */}
-              <div className={`absolute -right-4 -bottom-4 w-24 h-24 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity ${
+              <div className={`absolute -right-4 -bottom-4 w-16 h-16 md:w-24 md:h-24 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity ${
                 item.id === 'users' ? 'bg-blue-500' : 
                 item.id === 'active' ? 'bg-green-500' : 
                 item.id === 'comments' ? 'bg-primary' : 'bg-yellow-500'

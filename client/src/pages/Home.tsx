@@ -165,8 +165,8 @@ const Home = () => {
       )}
       
       {/* Search Section Integrated to Home */}
-      <div className={`container mx-auto px-4 md:px-10 relative z-30 ${sliderMovies.length > 0 ? '-mt-12' : '-mt-20'}`}>
-        <div className={`max-w-4xl mx-auto p-2 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] backdrop-blur-3xl border transition-all duration-500 ${
+      <div className={`container mx-auto px-4 md:px-10 relative z-30 ${sliderMovies.length > 0 ? '-mt-10 md:-mt-12' : '-mt-20'}`}>
+        <div className={`max-w-4xl mx-auto p-1.5 md:p-2 rounded-2xl md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] backdrop-blur-3xl border transition-all duration-500 ${
           theme === 'dark' 
             ? 'bg-black/60 border-white/10 hover:border-primary/30' 
             : 'bg-white/90 border-gray-200 hover:border-primary/20'
@@ -176,16 +176,16 @@ const Home = () => {
             const query = e.target.search.value;
             if(query) window.location.href = `/search?q=${query}`;
           }} className="flex items-center">
-            <div className="pl-6 pr-3 text-primary/60"><FiSearch size={22} /></div>
+            <div className="pl-4 md:pl-6 pr-2 md:pr-3 text-primary/60"><FiSearch size={20} className="md:w-[22px]" /></div>
             <input 
               name="search"
               type="text" 
               placeholder={t('search_home_placeholder')} 
-              className={`w-full bg-transparent py-5 text-sm md:text-lg focus:outline-none font-bold placeholder:text-neutral-500 ${theme === 'dark' ? 'text-white' : 'text-dark'}`}
+              className={`w-full bg-transparent py-3.5 md:py-5 text-xs md:text-lg focus:outline-none font-bold placeholder:text-neutral-500 ${theme === 'dark' ? 'text-white' : 'text-dark'}`}
             />
-            <button type="submit" className="bg-primary text-white px-10 py-5 rounded-[2rem] font-black uppercase tracking-widest text-[11px] hover:bg-red-700 transition-all shadow-2xl active:scale-95 whitespace-nowrap flex items-center space-x-2 group">
+            <button type="submit" className="bg-primary text-white px-5 md:px-10 py-3.5 md:py-5 rounded-xl md:rounded-[2rem] font-black uppercase tracking-widest text-[9px] md:text-[11px] hover:bg-red-700 transition-all shadow-2xl active:scale-95 whitespace-nowrap flex items-center space-x-2 group">
               <span>{t('search_btn')}</span>
-              <FiSearch className="group-hover:translate-x-1 transition-transform" />
+              <FiSearch className="hidden md:block group-hover:translate-x-1 transition-transform" />
             </button>
           </form>
         </div>

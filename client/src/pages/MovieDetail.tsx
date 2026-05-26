@@ -294,7 +294,7 @@ const MovieDetail = () => {
         )}
       </AnimatePresence>
 
-      <div className="relative h-[50vh] md:h-[80vh] w-full overflow-hidden">
+      <div className="relative h-[35vh] md:h-[80vh] w-full overflow-hidden">
         <img 
           src={movie.isLocal ? movie.backdrop_path : `https://image.tmdb.org/t/p/original${movie.backdrop_path}`} 
           className="w-full h-full object-cover opacity-60" 
@@ -303,63 +303,63 @@ const MovieDetail = () => {
         <div className={`absolute inset-0 bg-gradient-to-t ${theme === 'dark' ? 'from-[#0a0a0a]' : 'from-[#f8f9fa]'} via-transparent to-transparent`} />
       </div>
 
-      <div className="container mx-auto px-4 md:px-10 lg:px-20 -mt-32 md:-mt-64 relative z-10">
-        <div className="flex flex-col lg:flex-row gap-16">
-          <div className="lg:w-[350px] flex-shrink-0 space-y-8">
-            <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-white/10">
+      <div className="container mx-auto px-4 md:px-10 lg:px-20 -mt-20 md:-mt-64 relative z-10">
+        <div className="flex flex-col lg:flex-row gap-10 md:gap-16">
+          <div className="lg:w-[350px] flex-shrink-0 space-y-6 md:space-y-8">
+            <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} className="relative rounded-3xl md:rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 max-w-[280px] md:max-w-none mx-auto">
               <img 
                 src={movie.isLocal ? movie.poster_path : `https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
                 className="w-full" 
                 alt="poster" 
               />
-              <div className="absolute top-4 left-4 bg-primary text-white text-[10px] font-black px-2 py-1 rounded uppercase">HD 4K</div>
+              <div className="absolute top-4 left-4 bg-primary text-white text-[8px] md:text-[10px] font-black px-2 py-1 rounded uppercase tracking-tighter">HD 4K</div>
             </motion.div>
             
-            <button onClick={() => trailer ? setShowVideo(true) : toast.info(t('no_trailer'))} className="w-full bg-primary hover:bg-red-700 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-sm transition-all flex items-center justify-center space-x-4"><FiPlay className="fill-current" size={24} /><span>{t('play_now')}</span></button>
+            <button onClick={() => trailer ? setShowVideo(true) : toast.info(t('no_trailer'))} className="w-full bg-primary hover:bg-red-700 text-white py-4 md:py-5 rounded-xl md:rounded-2xl font-black uppercase tracking-[0.2em] text-xs md:text-sm transition-all flex items-center justify-center space-x-3 md:space-x-4"><FiPlay className="fill-current" size={20} md:size={24} /><span>{t('play_now')}</span></button>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3 md:gap-4">
               <button 
                 onClick={toggleFavorite} 
-                className={`py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-300 flex items-center justify-center space-x-2 border overflow-hidden group/fav w-full hover:scale-105 active:scale-95 ${
+                className={`py-3.5 md:py-4 rounded-xl md:rounded-2xl font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all duration-300 flex items-center justify-center space-x-2 border overflow-hidden group/fav w-full hover:scale-105 active:scale-95 ${
                   isFavorite 
                     ? 'bg-white text-black border-white shadow-xl shadow-white/10' 
                     : 'bg-white/5 text-neutral-400 border-white/10 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                <div className="flex items-center space-x-2 transition-transform duration-300 group-hover/fav:scale-110">
-                  {isFavorite ? <FiCheck size={18} /> : <FiPlus size={18} />}
+                <div className="flex items-center space-x-1.5 md:space-x-2 transition-transform duration-300 group-hover/fav:scale-110">
+                  {isFavorite ? <FiCheck size={16} md:size={18} /> : <FiPlus size={16} md:size={18} />}
                   <span className="whitespace-nowrap">{isFavorite ? t('saved_fav') : t('save_fav')}</span>
                 </div>
               </button>
               <button 
                 onClick={handleShare} 
-                className="py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] bg-white/5 text-neutral-400 border border-white/10 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center space-x-2 hover:scale-105 active:scale-95 shadow-xl hover:shadow-white/5"
+                className="py-3.5 md:py-4 rounded-xl md:rounded-2xl font-black uppercase tracking-widest text-[9px] md:text-[10px] bg-white/5 text-neutral-400 border border-white/10 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center space-x-1.5 md:space-x-2 hover:scale-105 active:scale-95 shadow-xl hover:shadow-white/5"
               >
-                <FiShare2 size={18} />
+                <FiShare2 size={16} md:size={18} />
                 <span>{t('share')}</span>
               </button>
             </div>
 
-            <div className={`p-8 rounded-[2rem] border transition-colors ${theme === 'dark' ? 'bg-white/5 border-white/10 text-neutral-400' : 'bg-white border-gray-200 text-gray-600 shadow-lg'} space-y-4 text-xs font-bold uppercase tracking-widest`}>
-              <div className="flex justify-between items-center"><FiStar className="text-yellow-500" /> <span className={`${theme === 'dark' ? 'text-white' : 'text-dark'} text-lg font-black`}>{communityRating.toFixed(1)}</span></div>
+            <div className={`p-6 md:p-8 rounded-3xl md:rounded-[2rem] border transition-colors ${theme === 'dark' ? 'bg-white/5 border-white/10 text-neutral-400' : 'bg-white border-gray-200 text-gray-600 shadow-lg'} space-y-3 md:space-y-4 text-[10px] md:text-xs font-bold uppercase tracking-widest`}>
+              <div className="flex justify-between items-center"><FiStar className="text-yellow-500" /> <span className={`${theme === 'dark' ? 'text-white' : 'text-dark'} text-base md:text-lg font-black`}>{communityRating.toFixed(1)}</span></div>
               <div className={`h-[1px] ${theme === 'dark' ? 'bg-white/5' : 'bg-gray-100'}`} />
               <div className="flex justify-between items-center">{t('views')}: <span className={theme === 'dark' ? 'text-white' : 'text-dark'}>{movie.isLocal ? (movie.views || 0).toLocaleString() : ((movie.popularity || 0) * 10).toLocaleString()}</span></div>
             </div>
           </div>
 
-          <div className="flex-grow space-y-12">
-            <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
-              <h1 className={`text-4xl md:text-7xl font-black leading-tight tracking-tighter uppercase ${theme === 'dark' ? 'text-white' : 'text-dark'}`}>{movie.title}</h1>
-              <p className="text-primary font-black italic text-xl uppercase">{movie.tagline}</p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="flex-grow space-y-8 md:space-y-12">
+            <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} className="space-y-4 md:space-y-6 text-center lg:text-left">
+              <h1 className={`text-3xl md:text-7xl font-black leading-tight tracking-tighter uppercase ${theme === 'dark' ? 'text-white' : 'text-dark'}`}>{movie.title}</h1>
+              {movie.tagline && <p className="text-primary font-black italic text-lg uppercase">{movie.tagline}</p>}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                 {movieInfoItems.map((item, i) => (
-                  <div key={i} className={`p-4 rounded-2xl border transition-colors ${theme === 'dark' ? 'bg-white/5 border-white/5' : 'bg-white border-gray-200 shadow-sm'}`}>
-                    <p className="text-[8px] text-neutral-500 font-black mb-1 uppercase tracking-widest whitespace-nowrap overflow-hidden text-ellipsis">{item.label}</p>
-                    <p className={`text-xs font-black uppercase ${theme === 'dark' ? 'text-white' : 'text-dark'} whitespace-nowrap overflow-hidden text-ellipsis`}>{item.value}</p>
+                  <div key={i} className={`p-3 md:p-4 rounded-xl md:rounded-2xl border transition-colors ${theme === 'dark' ? 'bg-white/5 border-white/5' : 'bg-white border-gray-200 shadow-sm'}`}>
+                    <p className="text-[7px] md:text-[8px] text-neutral-500 font-black mb-1 uppercase tracking-widest whitespace-nowrap overflow-hidden text-ellipsis">{item.label}</p>
+                    <p className={`text-[10px] md:text-xs font-black uppercase ${theme === 'dark' ? 'text-white' : 'text-dark'} whitespace-nowrap overflow-hidden text-ellipsis`}>{item.value}</p>
                   </div>
                 ))}
               </div>
-              <p className={`text-lg leading-relaxed font-medium p-8 rounded-3xl border transition-colors ${theme === 'dark' ? 'text-neutral-300 bg-white/5 border-white/5' : 'text-gray-700 bg-white border-gray-200 shadow-sm'}`}>{movie.overview}</p>
+              <p className={`text-sm md:text-lg leading-relaxed font-medium p-6 md:p-8 rounded-2xl md:rounded-3xl border transition-colors ${theme === 'dark' ? 'text-neutral-300 bg-white/5 border-white/5' : 'text-gray-700 bg-white border-gray-200 shadow-sm'}`}>{movie.overview}</p>
             </motion.div>
 
             <div className="space-y-12 p-6 md:p-12 rounded-[2.5rem] border transition-all duration-300 shadow-2xl relative overflow-hidden group w-full max-w-7xl mx-auto">

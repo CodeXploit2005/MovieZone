@@ -117,41 +117,41 @@ const BannerSlider = ({ movies }: BannerSliderProps) => {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
-                    className="space-y-6"
+                    className="space-y-4 md:space-y-6"
                   >
-                    <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mb-4">
-                      <span className="bg-primary text-white text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest">
+                    <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 md:gap-4 mb-2 md:mb-4">
+                      <span className="bg-primary text-white text-[8px] md:text-[10px] font-black px-3 py-1.5 md:px-4 md:py-2 rounded-full uppercase tracking-widest">
                         {t('featured_movie')}
                       </span>
-                      <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
-                        <span className="text-yellow-500 font-black text-xs">★ {movie.vote_average?.toFixed(1)}</span>
-                        <span className="text-neutral-400 text-[10px] font-bold uppercase tracking-widest">| {movie.release_date?.split('-')[0]}</span>
+                      <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-white/10">
+                        <span className="text-yellow-500 font-black text-[10px] md:text-xs">★ {movie.vote_average?.toFixed(1)}</span>
+                        <span className="text-neutral-400 text-[8px] md:text-[10px] font-bold uppercase tracking-widest">| {movie.release_date?.split('-')[0]}</span>
                       </div>
                     </div>
                     
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black drop-shadow-2xl leading-[1.1] tracking-tighter uppercase text-white">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black drop-shadow-2xl leading-[1.1] tracking-tighter uppercase text-white line-clamp-2 md:line-clamp-none">
                       {movie.title || movie.name}
                     </h1>
                     
-                    <p className="text-sm md:text-base lg:text-lg text-neutral-300 mb-8 line-clamp-2 md:line-clamp-3 drop-shadow-md max-w-2xl font-medium leading-relaxed">
+                    <p className="text-xs sm:text-sm md:text-base lg:text-lg text-neutral-300 mb-4 md:mb-8 line-clamp-2 md:line-clamp-3 drop-shadow-md max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed">
                       {movie.overview}
                     </p>
                     
                     {/* Action Buttons */}
-                    <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
+                    <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 md:gap-4 pt-2 md:pt-4">
                       <Link 
                         to={movie.isCustom ? `/movie/local_${movie.id}` : (movie.name ? `/movie/tv/${movie.id}` : `/movie/${movie.id}`)}
-                        className="group flex items-center space-x-4 bg-primary text-white px-10 py-5 rounded-2xl font-black hover:bg-red-700 transition-all text-xs md:text-sm uppercase tracking-widest overflow-hidden relative"
+                        className="group flex items-center space-x-3 md:space-x-4 bg-primary text-white px-6 py-3.5 md:px-10 md:py-5 rounded-xl md:rounded-2xl font-black hover:bg-red-700 transition-all text-[10px] md:text-sm uppercase tracking-widest overflow-hidden relative"
                       >
-                        <FiPlay className="fill-current relative z-10" size={24} />
+                        <FiPlay className="fill-current relative z-10" size={18} md:size={24} />
                         <span className="relative z-10">{t('play_now')}</span>
                       </Link>
                       
                       <Link 
                         to={movie.isCustom ? `/movie/local_${movie.id}` : (movie.name ? `/movie/tv/${movie.id}` : `/movie/${movie.id}`)}
-                        className="flex items-center space-x-4 bg-white/5 text-white px-10 py-5 rounded-2xl font-black hover:bg-white/10 transition-all backdrop-blur-xl border border-white/10 text-xs md:text-sm uppercase tracking-widest"
+                        className="flex items-center space-x-3 md:space-x-4 bg-white/5 text-white px-6 py-3.5 md:px-10 md:py-5 rounded-xl md:rounded-2xl font-black hover:bg-white/10 transition-all backdrop-blur-xl border border-white/10 text-[10px] md:text-sm uppercase tracking-widest"
                       >
-                        <FiInfo size={24} />
+                        <FiInfo size={18} md:size={24} />
                         <span>{t('details')}</span>
                       </Link>
                     </div>
@@ -163,33 +163,33 @@ const BannerSlider = ({ movies }: BannerSliderProps) => {
         </motion.div>
       </AnimatePresence>
 
-      {/* Slider Controls */}
+      {/* Slider Controls - Hidden on very small screens */}
       <button 
         onClick={prevSlide}
-        className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 z-30 w-14 h-14 rounded-2xl bg-black/40 hover:bg-primary backdrop-blur-md text-white shadow-2xl transition-all hover:scale-110 active:scale-95 flex items-center justify-center group border border-white/5"
+        className="absolute left-2 md:left-10 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-black/40 hover:bg-primary backdrop-blur-md text-white shadow-2xl transition-all hover:scale-110 active:scale-95 hidden sm:flex items-center justify-center group border border-white/5"
       >
-        <FiChevronLeft size={32} className="group-hover:-translate-x-0.5 transition-transform" />
+        <FiChevronLeft size={24} md:size={32} className="group-hover:-translate-x-0.5 transition-transform" />
       </button>
 
       <button 
         onClick={nextSlide}
-        className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 z-30 w-14 h-14 rounded-2xl bg-black/40 hover:bg-primary backdrop-blur-md text-white shadow-2xl transition-all hover:scale-110 active:scale-95 flex items-center justify-center group border border-white/5"
+        className="absolute right-2 md:right-10 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-black/40 hover:bg-primary backdrop-blur-md text-white shadow-2xl transition-all hover:scale-110 active:scale-95 hidden sm:flex items-center justify-center group border border-white/5"
       >
-        <FiChevronRight size={32} className="group-hover:translate-x-0.5 transition-transform" />
+        <FiChevronRight size={24} md:size={32} className="group-hover:translate-x-0.5 transition-transform" />
       </button>
 
       {/* Bottom Controls Bar */}
-      <div className="absolute bottom-10 left-0 w-full z-30 px-4 md:px-10 lg:px-20">
+      <div className="absolute bottom-6 md:bottom-10 left-0 w-full z-30 px-4 md:px-10 lg:px-20">
         <div className="flex items-center justify-between">
           {/* Page Counter (Bottom Left) */}
-          <div className="flex items-center space-x-2 font-black text-[10px] md:text-xs tracking-widest uppercase">
+          <div className="flex items-center space-x-2 font-black text-[9px] md:text-xs tracking-widest uppercase">
             <span className="text-primary">{(currentIndex + 1).toString().padStart(2, '0')}</span>
             <span className="text-neutral-500">/</span>
             <span className="text-white/60">{movies.length.toString().padStart(2, '0')}</span>
           </div>
 
           {/* Indicators (Bottom Right) */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1.5 md:space-x-2">
             {movies.slice(0, 6).map((_, i) => (
               <button
                 key={i}
@@ -197,10 +197,10 @@ const BannerSlider = ({ movies }: BannerSliderProps) => {
                   setDirection(i > currentIndex ? 1 : -1);
                   setCurrentIndex(i);
                 }}
-                className={`h-1.5 rounded-full transition-all duration-700 ${
+                className={`h-1 md:h-1.5 rounded-full transition-all duration-700 ${
                   i === currentIndex 
-                    ? 'w-10 bg-primary shadow-[0_0_20px_rgba(229,9,20,0.6)]' 
-                    : 'w-3 bg-neutral-700 hover:bg-neutral-500'
+                    ? 'w-6 md:w-10 bg-primary shadow-[0_0_20px_rgba(229,9,20,0.6)]' 
+                    : 'w-2 md:w-3 bg-neutral-700 hover:bg-neutral-500'
                 }`}
               />
             ))}

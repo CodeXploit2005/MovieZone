@@ -170,10 +170,10 @@ const Navbar = () => {
       </div>
 
       {/* 3. Right Section */}
-      <div className="flex-1 flex items-center justify-end space-x-5">
+      <div className="flex-1 flex items-center justify-end space-x-2 md:space-x-5">
         
-        {/* Search Bar */}
-        <div className="relative flex items-center group">
+        {/* Search Bar - Hidden on mobile, shown on md+ */}
+        <div className="relative hidden md:flex items-center group">
           <form onSubmit={handleSearchSubmit}>
             <input 
               type="text" 
@@ -182,7 +182,7 @@ const Navbar = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className={`
                 rounded-full py-1.5 pl-4 pr-10 outline-none transition-all duration-500 ease-in-out font-bold text-sm
-                w-[180px] hover:w-[200px] focus:w-[280px] xl:focus:w-[300px]
+                w-[120px] lg:w-[180px] hover:w-[200px] focus:w-[250px] xl:focus:w-[300px]
                 ${theme === 'dark' 
                   ? 'bg-zinc-900/60 border border-zinc-700 text-white placeholder:text-zinc-600 focus:border-primary focus:bg-zinc-900 focus:shadow-[0_0_20px_rgba(220,38,38,0.2)]' 
                   : 'bg-gray-100 border border-gray-200 text-dark placeholder:text-gray-400 focus:border-primary focus:bg-white focus:shadow-[0_0_15px_rgba(220,38,38,0.1)]'
@@ -269,8 +269,8 @@ const Navbar = () => {
           </AnimatePresence>
         </div>
 
-        {/* Theme & Language Controls */}
-        <div className="flex items-center space-x-2">
+        {/* Theme & Language Controls - Hidden on mobile, shown on md+ */}
+        <div className="hidden md:flex items-center space-x-2">
           <button 
             onClick={toggleTheme} 
             className={`p-2 transition-all rounded-full hover:scale-110 ${
@@ -301,7 +301,7 @@ const Navbar = () => {
               className="flex items-center space-x-3 cursor-pointer group"
             >
               <div className="relative">
-                <div className="w-10 h-10 rounded-full border-2 border-primary overflow-hidden p-0.5 shadow-lg shadow-primary/20 transition-transform group-hover:scale-105">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-primary overflow-hidden p-0.5 shadow-lg shadow-primary/20 transition-transform group-hover:scale-105">
                   <Avatar 
                     src={user.avatar} 
                     alt={user.username}
@@ -309,7 +309,7 @@ const Navbar = () => {
                     className="w-full h-full rounded-full object-cover" 
                   />
                 </div>
-                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0a0a0a] rounded-full shadow-[0_0_10px_rgba(34,197,94,0.5)]"></span>
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 md:w-3 md:h-3 bg-green-500 border-2 border-[#0a0a0a] rounded-full shadow-[0_0_10px_rgba(34,197,94,0.5)]"></span>
               </div>
               <div className="hidden xl:flex items-center space-x-2">
                 <div className="text-left leading-tight">
@@ -375,50 +375,83 @@ const Navbar = () => {
             </AnimatePresence>
           </div>
         ) : (
-          <div className="flex items-center space-x-4">
-            <Link to="/login" className={`text-[12px] font-bold hover:text-primary transition-colors ${theme === 'dark' ? 'text-white' : 'text-dark'}`}>{t('login')}</Link>
-            <Link to="/register" className="bg-primary text-white px-5 py-1.5 rounded-full text-[12px] font-bold hover:bg-red-700 transition-all shadow-lg shadow-primary/20">{t('register')}</Link>
+          <div className="flex items-center space-x-2 md:space-x-4">
+            <Link to="/login" className={`text-[10px] md:text-[12px] font-bold hover:text-primary transition-colors ${theme === 'dark' ? 'text-white' : 'text-dark'}`}>{t('login')}</Link>
+            <Link to="/register" className="bg-primary text-white px-3 md:px-5 py-1.5 rounded-full text-[10px] md:text-[12px] font-bold hover:bg-red-700 transition-all shadow-lg shadow-primary/20">{t('register')}</Link>
           </div>
         )}
       </div>
 
-      <button className="lg:hidden text-white ml-4" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+      <button className="text-white ml-2 md:ml-4 lg:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
         <FiMenu size={24} className={theme === 'dark' ? 'text-white' : 'text-dark'} />
       </button>
 
       {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div initial={{ opacity: 0, x: '100%' }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: '100%' }} className="lg:hidden fixed inset-0 bg-white dark:bg-dark z-[1100] p-6 overflow-y-auto transition-colors">
+          <motion.div initial={{ opacity: 0, x: '100%' }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: '100%' }} className={`lg:hidden fixed inset-0 z-[1100] p-6 overflow-y-auto transition-colors ${theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-white'}`}>
             <div className="flex justify-between items-center mb-10">
               <span className="text-2xl font-black text-primary">MOVIEZONE</span>
               <div className="flex items-center space-x-4">
                 <button onClick={toggleTheme} className={`p-2 rounded-full ${theme === 'dark' ? 'bg-white/5 text-yellow-500' : 'bg-gray-100 text-blue-600'}`}>{theme === 'dark' ? <FiSun size={24} /> : <FiMoon size={24} />}</button>
-                <button onClick={() => setIsMobileMenuOpen(false)} className="text-dark dark:text-white"><FiX size={32} /></button>
+                <button onClick={() => setIsMobileMenuOpen(false)} className={theme === 'dark' ? 'text-white' : 'text-dark'}><FiX size={32} /></button>
               </div>
             </div>
+
+            {/* Mobile Search */}
+            <div className="mb-8">
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <input 
+                  type="text" 
+                  placeholder={t('search_placeholder')} 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={`w-full rounded-2xl py-4 pl-5 pr-12 outline-none font-bold text-sm ${
+                    theme === 'dark' ? 'bg-white/5 border border-white/10 text-white' : 'bg-gray-100 border border-gray-200 text-dark'
+                  }`}
+                />
+                <FiSearch className="absolute right-4 top-1/2 -translate-y-1/2 text-primary" size={20} />
+              </form>
+            </div>
+
             <div className="space-y-6">
+              {/* Language Switcher in Mobile Menu */}
+              <div className="flex items-center justify-between p-4 rounded-2xl bg-primary/5 border border-primary/10">
+                <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-dark'}`}>{t('language')}</span>
+                <button 
+                  onClick={toggleLang}
+                  className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${
+                    theme === 'dark' ? 'bg-zinc-800 text-white border border-zinc-700' : 'bg-white text-primary border border-gray-200'
+                  }`}
+                >
+                  {lang === 'vi' ? 'Tiếng Việt' : 'English'}
+                </button>
+              </div>
+
               {navLinks.map((link) => (
                 <div key={link.name}>
                   {link.type === 'dropdown' ? (
                     <div className="space-y-4">
                       <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500">{link.name}</p>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-2 gap-3">
                         {link.items?.map(item => (
-                          <Link key={item} to={`/search?q=${item}`} onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold text-neutral-600 dark:text-neutral-300">{item}</Link>
+                          <Link key={item} to={`/search?q=${item}`} onClick={() => setIsMobileMenuOpen(false)} className={`text-sm font-bold p-3 rounded-xl transition-colors ${theme === 'dark' ? 'bg-white/5 text-neutral-300' : 'bg-gray-50 text-neutral-600'}`}>{item}</Link>
                         ))}
                       </div>
                     </div>
                   ) : (
                     (!link.protected || user) && (
-                      <Link to={link.path || '#'} onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold block text-dark dark:text-white">{link.name}</Link>
+                      <Link to={link.path || '#'} onClick={() => setIsMobileMenuOpen(false)} className={`text-xl font-bold block ${theme === 'dark' ? 'text-white' : 'text-dark'}`}>{link.name}</Link>
                     )
                   )}
                 </div>
               ))}
-              <div className="h-[1px] w-full bg-gray-200 dark:bg-white/5"></div>
+              <div className={`h-[1px] w-full ${theme === 'dark' ? 'bg-white/5' : 'bg-gray-100'}`}></div>
               {user ? (
-                <button onClick={handleLogout} className="text-primary text-xl font-bold">{t('logout')}</button>
+                <div className="space-y-4">
+                  <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)} className={`text-xl font-bold block ${theme === 'dark' ? 'text-white' : 'text-dark'}`}>{t('profile')}</Link>
+                  <button onClick={handleLogout} className="text-primary text-xl font-bold">{t('logout')}</button>
+                </div>
               ) : (
                 <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-primary text-xl font-bold block">{t('login')}</Link>
               )}

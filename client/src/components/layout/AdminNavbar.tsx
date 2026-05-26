@@ -18,11 +18,11 @@ const AdminNavbar = () => {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
       theme === 'dark' ? 'bg-black/80 border-white/10' : 'bg-white/80 border-gray-100'
     } backdrop-blur-xl`}>
-      <div className="container mx-auto px-4 md:px-10 h-20 flex items-center justify-between">
-        <div className="flex items-center space-x-8">
+      <div className="container mx-auto px-4 md:px-10 h-16 md:h-20 flex items-center justify-between">
+        <div className="flex items-center space-x-4 md:space-x-8">
           <Link to="/admin" className="flex items-center space-x-2">
-            <FiShield className="text-primary" size={24} />
-            <span className="text-xl font-black tracking-tighter uppercase">
+            <FiShield className="text-primary" size={20} md:size={24} />
+            <span className="text-lg md:text-xl font-black tracking-tighter uppercase">
               Admin<span className="text-primary">Zone</span>
             </span>
           </Link>
@@ -36,12 +36,12 @@ const AdminNavbar = () => {
           </div>
         </div>
 
-        <div className="flex items-center space-x-6">
+        <div className="flex items-center space-x-3 md:space-x-6">
           {/* Controls */}
-          <div className="hidden sm:flex items-center space-x-2 border-r border-white/10 pr-6 mr-2">
+          <div className="flex items-center space-x-2 md:border-r md:border-white/10 md:pr-6 md:mr-2">
             <button 
               onClick={toggleLang}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center text-[10px] font-black uppercase transition-all ${
+              className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl flex items-center justify-center text-[9px] md:text-[10px] font-black uppercase transition-all ${
                 theme === 'dark' ? 'bg-white/5 text-neutral-400 hover:bg-white/10' : 'bg-gray-100 text-neutral-600 hover:bg-gray-200'
               }`}
             >
@@ -49,37 +49,37 @@ const AdminNavbar = () => {
             </button>
             <button 
               onClick={toggleTheme}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+              className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl flex items-center justify-center transition-all ${
                 theme === 'dark' ? 'bg-white/5 text-yellow-500 hover:bg-white/10' : 'bg-gray-100 text-neutral-600 hover:bg-gray-200'
               }`}
             >
-              {theme === 'dark' ? <FiSun size={18} /> : <FiMoon size={18} />}
+              {theme === 'dark' ? <FiSun size={16} md:size={18} /> : <FiMoon size={16} md:size={18} />}
             </button>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4">
             <div className="hidden lg:block text-right">
               <p className={`text-[10px] font-black uppercase tracking-widest ${theme === 'dark' ? 'text-white' : 'text-dark'}`}>{user?.username}</p>
               <p className="text-[9px] font-bold text-primary uppercase tracking-tighter">{t('admin_role')}</p>
             </div>
-            <Avatar src={user?.avatar} size={40} className="border-2 border-primary" />
+            <Avatar src={user?.avatar} size={32} md:size={40} className="border-2 border-primary" />
           </div>
 
           <div className="flex items-center space-x-2">
             <Link 
               to="/" 
               target="_blank"
-              className="p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all text-neutral-400 hover:text-white group"
+              className="p-2 md:p-3 bg-white/5 border border-white/10 rounded-lg md:rounded-xl hover:bg-white/10 transition-all text-neutral-400 hover:text-white group"
               title={t('preview_site')}
             >
-              <FiExternalLink size={18} className="group-hover:scale-110 transition-transform" />
+              <FiExternalLink size={16} md:size={18} className="group-hover:scale-110 transition-transform" />
             </Link>
             <button 
               onClick={handleLogout}
-              className="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all group"
+              className="p-2 md:p-3 bg-red-500/10 text-red-500 rounded-lg md:rounded-xl hover:bg-red-500 hover:text-white transition-all group"
               title={t('logout')}
             >
-              <FiLogOut size={18} className="group-hover:scale-110 transition-transform" />
+              <FiLogOut size={16} md:size={18} className="group-hover:scale-110 transition-transform" />
             </button>
           </div>
         </div>
