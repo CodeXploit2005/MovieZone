@@ -28,7 +28,11 @@ const Home = () => {
     try {
       const apiLang = lang === 'vi' ? 'vi-VN' : 'en-US';
       const data = await movieService.getTrendingMovies(page, apiLang);
-      setTrending(prev => page === 1 ? data.results : [...prev, ...data.results]);
+      setTrending(prev => {
+        const existingIds = new Set(prev.map(m => m.id));
+        const newMovies = data.results.filter(m => !existingIds.has(m.id));
+        return page === 1 ? data.results : [...prev, ...newMovies];
+      });
     } catch (error) {
       console.error('Error fetching trending:', error);
     }
@@ -38,7 +42,11 @@ const Home = () => {
     try {
       const apiLang = lang === 'vi' ? 'vi-VN' : 'en-US';
       const data = await movieService.getPopularMovies(page, apiLang);
-      setPopular(prev => page === 1 ? data.results : [...prev, ...data.results]);
+      setPopular(prev => {
+        const existingIds = new Set(prev.map(m => m.id));
+        const newMovies = data.results.filter(m => !existingIds.has(m.id));
+        return page === 1 ? data.results : [...prev, ...newMovies];
+      });
     } catch (error) {
       console.error('Error fetching popular:', error);
     }
@@ -48,7 +56,11 @@ const Home = () => {
     try {
       const apiLang = lang === 'vi' ? 'vi-VN' : 'en-US';
       const data = await movieService.getUpcomingMovies(page, apiLang);
-      setUpcoming(prev => page === 1 ? data.results : [...prev, ...data.results]);
+      setUpcoming(prev => {
+        const existingIds = new Set(prev.map(m => m.id));
+        const newMovies = data.results.filter(m => !existingIds.has(m.id));
+        return page === 1 ? data.results : [...prev, ...newMovies];
+      });
     } catch (error) {
       console.error('Error fetching upcoming:', error);
     }
@@ -191,10 +203,10 @@ const Home = () => {
         </div>
       </div>
       
-      <div className="container mx-auto px-4 md:px-10 mt-16">
+      <div className="container mx-auto px-4 md:px-10 mt-20 md:mt-16">
         <div className="flex flex-col lg:flex-row gap-10">
           {/* Main Content */}
-          <div className="lg:w-3/4 space-y-12">
+          <div className="lg:w-3/4 space-y-16 md:space-y-12">
             {localMovies.length > 0 && (
               <MovieRow title={t('newly_added')} movies={localMovies.map(m => ({
                 id: m._id,
@@ -225,10 +237,46 @@ const Home = () => {
                 </Link>
               </div>
             </div>
+
+            {/* Mobile Trending Section (moved from sidebar) */}
+            <div className={`lg:hidden rounded-3xl border transition-colors overflow-hidden ${theme === 'dark' ? 'bg-white/5 border-white/5' : 'bg-white border-gray-100 shadow-lg'}`}>
+              <div className="bg-primary px-6 py-5 flex items-center space-x-3">
+                <FiTrendingUp className="text-white" size={20} />
+                <h3 className="font-black text-xs uppercase tracking-[0.2em] text-white">
+                  {t('trending_week')}
+                </h3>
+              </div>
+              <div className="p-6 space-y-6">
+                {trending.slice(5, 12).map((movie, index) => (
+                  <Link key={movie.id} to={`/movie/${movie.id}`} className="flex items-center space-x-4 group">
+                    <div className="relative flex-shrink-0">
+                      <span className={`absolute -top-2 -left-2 w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black z-10 shadow-xl ${index < 3 ? 'bg-primary text-white' : 'bg-neutral-800 text-neutral-400'}`}>
+                        {index + 1}
+                      </span>
+                      <img 
+                        src={`https://image.tmdb.org/t/p/w185${movie.poster_path}`} 
+                        className="w-16 h-24 object-cover rounded-xl border border-white/5 group-hover:border-primary/50 transition-all shadow-md" 
+                        alt={movie.title} 
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="flex-grow">
+                      <h4 className={`text-[11px] font-black uppercase leading-tight line-clamp-2 transition-colors group-hover:text-primary ${theme === 'dark' ? 'text-neutral-200' : 'text-neutral-800'}`}>
+                        {movie.title}
+                      </h4>
+                      <div className="flex items-center space-x-3 mt-2 text-[9px] font-black text-neutral-500 uppercase tracking-widest">
+                        <span className="text-yellow-500 flex items-center"><FiStar className="mr-1" /> {movie.vote_average?.toFixed(1) || '0.0'}</span>
+                        <span>{movie.release_date?.split('-')[0] || 'N/A'}</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="lg:w-1/4 space-y-10">
+          {/* Sidebar - Only on Desktop */}
+          <div className="hidden lg:block lg:w-1/4 space-y-10">
             <div className={`rounded-3xl border transition-colors overflow-hidden ${theme === 'dark' ? 'bg-white/5 border-white/5' : 'bg-white border-gray-100 shadow-lg'}`}>
               <div className="bg-primary px-6 py-5 flex items-center space-x-3">
                 <FiTrendingUp className="text-white" size={20} />

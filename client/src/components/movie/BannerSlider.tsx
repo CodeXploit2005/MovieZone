@@ -1,214 +1,164 @@
-import { useState, useEffect, useCallback, memo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { FiPlay, FiInfo, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
-import { Movie } from '../../types/movie';
+import { FiChevronLeft, FiChevronRight, FiPlay, FiInfo } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Movie } from '../../types';
 
 interface BannerSliderProps {
-  movies: (Movie & { isCustom?: boolean })[];
+  movies: Movie[];
 }
 
 const BannerSlider = ({ movies }: BannerSliderProps) => {
-  const { t } = useAuth();
+  const { theme, t } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState(0);
-
-  const nextSlide = useCallback(() => {
-    setDirection(1);
-    setCurrentIndex((prev) => (prev === movies.length - 1 ? 0 : prev + 1));
-  }, [movies.length]);
-
-  const prevSlide = useCallback(() => {
-    setDirection(-1);
-    setCurrentIndex((prev) => (prev === 0 ? movies.length - 1 : prev - 1));
-  }, [movies.length]);
+  const [isMobile, setIsMobile] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      nextSlide();
-    }, 8000);
-    return () => clearInterval(timer);
-  }, [nextSlide]);
+    const checkIsMobile = () => setIsMobile(window.innerWidth < 768);
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
 
-  if (!movies || movies.length === 0) return null;
-
-  const movie = movies[currentIndex];
-  const title = movie.title || movie.name || 'Untitled';
-  const backdropUrl = movie.isCustom ? movie.backdrop_path : (movie.backdrop_path ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}` : 'https://placehold.co/1920x1080/1a1a1a/e50914?text=No+Backdrop');
-  const posterUrl = movie.isCustom ? movie.poster_path : (movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://placehold.co/500x750/1a1a1a/e50914?text=No+Poster');
-
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>, fallback: string) => {
-    const target = e.target as HTMLImageElement;
-    target.onerror = null;
-    target.src = fallback;
+  const resetTimer = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(nextSlide, 7000);
   };
 
+  useEffect(() => {
+    resetTimer();
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [currentIndex]);
+
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev === movies.length - 1 ? 0 : prev + 1));
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) => (prev === 0 ? movies.length - 1 : prev - 1));
+  };
+
+  const currentMovie = movies[currentIndex];
+  if (!currentMovie) return null;
+
+  const imagePath = currentMovie.backdrop_path || currentMovie.poster_path;
+  const imageUrl = imagePath 
+    ? `https://image.tmdb.org/t/p/original${imagePath}` 
+    : 'https://placehold.co/1920x1080/111111/e50914?text=No+Image';
+
   return (
-    <div className="relative h-[85vh] md:h-screen w-full overflow-hidden bg-black">
-      <AnimatePresence initial={false} custom={direction} mode="wait">
+    <div className="relative w-full overflow-hidden">
+      <AnimatePresence mode='wait'>
         <motion.div
           key={currentIndex}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8 }}
-          className="absolute inset-0"
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 1, ease: 'easeInOut' }}
+          className="w-full flex-shrink-0 relative h-[500px] lg:h-[600px] xl:h-[700px]"
         >
-          {/* Background Image with mask */}
-          <div className="absolute inset-0">
-            <img 
-              src={backdropUrl} 
-              alt={title} 
+          <div className="absolute inset-0 z-0">
+            <img
+              src={imageUrl}
+              alt={currentMovie.title || currentMovie.name}
               className="w-full h-full object-cover"
-              onError={(e) => handleImageError(e, 'https://placehold.co/1920x1080/1a1a1a/e50914?text=No+Backdrop')}
+              draggable={false}
             />
-            <div className="absolute inset-0 bg-black/40" />
-            <div className="absolute inset-0 bg-gradient-to-r from-dark via-dark/80 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-transparent"></div>
           </div>
 
-          {/* Content */}
-          <div className="absolute inset-0 flex items-center">
-            <div className="container mx-auto px-4 md:px-10 lg:px-20">
-              <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-                
-                {/* Left Side: Poster */}
-                <motion.div 
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3, duration: 0.8 }}
-                  className="hidden lg:block w-[320px] xl:w-[380px] flex-shrink-0"
-                >
-                  {movie.id?.toString().startsWith('http') ? (
-                    <a href={movie.id.toString()} target="_blank" rel="noopener noreferrer" className="block relative group perspective-1000">
-                      <img 
-                        src={posterUrl} 
-                        className="rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.8)] border border-primary/20 transition-all duration-500 group-hover:scale-[1.02] group-hover:border-primary"
-                        alt={title}
-                        onError={(e) => handleImageError(e, 'https://placehold.co/500x750/1a1a1a/e50914?text=No+Poster')}
-                      />
-                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-[2.5rem] flex items-center justify-center backdrop-blur-[1px]">
-                        <motion.div whileHover={{ scale: 1.1 }} className="w-16 h-16 bg-primary rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(229,9,20,0.5)]">
-                          <FiPlay className="fill-current text-white ml-1" size={28} />
-                        </motion.div>
-                      </div>
-                    </a>
-                  ) : (
-                    <Link to={movie.isCustom ? `/movie/local_${movie.id}` : (movie.name ? `/movie/tv/${movie.id}` : `/movie/${movie.id}`)} className="block relative group perspective-1000">
-                      <img 
-                        src={posterUrl} 
-                        className="rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.8)] border border-primary/20 transition-all duration-500 group-hover:scale-[1.02] group-hover:border-primary"
-                        alt={title}
-                        onError={(e) => handleImageError(e, 'https://placehold.co/500x750/1a1a1a/e50914?text=No+Poster')}
-                      />
-                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-[2.5rem] flex items-center justify-center backdrop-blur-[1px]">
-                        <motion.div whileHover={{ scale: 1.1 }} className="w-16 h-16 bg-primary rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(229,9,20,0.5)]">
-                          <FiPlay className="fill-current text-white ml-1" size={28} />
-                        </motion.div>
-                      </div>
-                    </Link>
-                  )}
-                </motion.div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              prevSlide();
+              resetTimer();
+            }}
+            className="absolute left-5 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-14 md:h-14 rounded-xl bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/70 transition-all hover:scale-110"
+          >
+            <FiChevronLeft size={24} />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              nextSlide();
+              resetTimer();
+            }}
+            className="absolute right-5 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-14 md:h-14 rounded-xl bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/70 transition-all hover:scale-110"
+          >
+            <FiChevronRight size={24} />
+          </button>
 
-                {/* Right Side: Info */}
-                <div className="flex-grow max-w-4xl text-center lg:text-left">
-                  <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2, duration: 0.5 }}
-                    className="space-y-4 md:space-y-6"
-                  >
-                    <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 md:gap-4 mb-2 md:mb-4">
-                      <span className="bg-primary text-white text-[8px] md:text-[10px] font-black px-3 py-1.5 md:px-4 md:py-2 rounded-full uppercase tracking-widest">
-                        {t('featured_movie')}
-                      </span>
-                      <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-white/10">
-                        <span className="text-yellow-500 font-black text-[10px] md:text-xs">★ {movie.vote_average?.toFixed(1)}</span>
-                        <span className="text-neutral-400 text-[8px] md:text-[10px] font-bold uppercase tracking-widest">| {movie.release_date?.split('-')[0]}</span>
-                      </div>
-                    </div>
-                    
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black drop-shadow-2xl leading-[1.1] tracking-tighter uppercase text-white line-clamp-2 md:line-clamp-none">
-                      {movie.title || movie.name}
-                    </h1>
-                    
-                    <p className="text-xs sm:text-sm md:text-base lg:text-lg text-neutral-300 mb-4 md:mb-8 line-clamp-2 md:line-clamp-3 drop-shadow-md max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed">
-                      {movie.overview}
-                    </p>
-                    
-                    {/* Action Buttons */}
-                    <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 md:gap-4 pt-2 md:pt-4">
-                      <Link 
-                        to={movie.isCustom ? `/movie/local_${movie.id}` : (movie.name ? `/movie/tv/${movie.id}` : `/movie/${movie.id}`)}
-                        className="group flex items-center space-x-3 md:space-x-4 bg-primary text-white px-6 py-3.5 md:px-10 md:py-5 rounded-xl md:rounded-2xl font-black hover:bg-red-700 transition-all text-[10px] md:text-sm uppercase tracking-widest overflow-hidden relative"
-                      >
-                        <FiPlay className="fill-current relative z-10" size={18} md:size={24} />
-                        <span className="relative z-10">{t('play_now')}</span>
-                      </Link>
-                      
-                      <Link 
-                        to={movie.isCustom ? `/movie/local_${movie.id}` : (movie.name ? `/movie/tv/${movie.id}` : `/movie/${movie.id}`)}
-                        className="flex items-center space-x-3 md:space-x-4 bg-white/5 text-white px-6 py-3.5 md:px-10 md:py-5 rounded-xl md:rounded-2xl font-black hover:bg-white/10 transition-all backdrop-blur-xl border border-white/10 text-[10px] md:text-sm uppercase tracking-widest"
-                      >
-                        <FiInfo size={18} md:size={24} />
-                        <span>{t('details')}</span>
-                      </Link>
-                    </div>
-                  </motion.div>
+          <div className="relative z-10 h-full flex flex-col justify-center px-10 lg:px-20 max-w-4xl">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="bg-primary text-white px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-widest shadow-lg shadow-primary/30">
+                {t('trending_now')}
+              </span>
+              {currentMovie.vote_average && (
+                <div className="flex items-center gap-1.5 bg-zinc-900/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-zinc-800">
+                  <span className="text-yellow-400 text-lg md:text-xl">★</span>
+                  <span className="text-white font-bold text-sm md:text-base">
+                    {currentMovie.vote_average.toFixed(1)}
+                  </span>
+                  <span className="text-zinc-400 text-xs md:text-sm">
+                    {currentMovie.release_date?.split('-')[0] || 
+                     currentMovie.first_air_date?.split('-')[0] || ''}
+                  </span>
                 </div>
-              </div>
+              )}
+            </div>
+
+            <h2 className="text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white mb-4 md:mb-6 leading-tight drop-shadow-2xl">
+              {currentMovie.title || currentMovie.name}
+            </h2>
+
+            <p className="text-sm md:text-lg text-zinc-300 mb-6 md:mb-10 line-clamp-3 md:line-clamp-4 max-w-2xl drop-shadow-lg">
+              {currentMovie.overview}
+            </p>
+
+            <div className="flex flex-wrap gap-3 md:gap-5">
+              <Link 
+                to={`/movie/${currentMovie.id}`}
+                className="flex items-center gap-2 md:gap-3 bg-primary text-white px-6 md:px-10 py-3 md:py-4 rounded-full font-bold text-sm md:text-lg hover:bg-red-700 transition-all shadow-xl shadow-primary/30 hover:shadow-primary/50 hover:scale-105 active:scale-95"
+              >
+                <FiPlay size={isMobile ? 18 : 24} className="fill-current" />
+                {t('watch_now')}
+              </Link>
+
+              <Link 
+                to={`/movie/${currentMovie.id}`}
+                className="flex items-center gap-2 md:gap-3 bg-white/10 backdrop-blur-md text-white px-6 md:px-10 py-3 md:py-4 rounded-full font-bold text-sm md:text-lg border border-white/20 hover:bg-white/20 transition-all hover:scale-105 active:scale-95"
+              >
+                <FiInfo size={isMobile ? 18 : 24} />
+                {t('details')}
+              </Link>
             </div>
           </div>
         </motion.div>
       </AnimatePresence>
 
-      {/* Slider Controls - Hidden on very small screens */}
-      <button 
-        onClick={prevSlide}
-        className="absolute left-2 md:left-10 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-black/40 hover:bg-primary backdrop-blur-md text-white shadow-2xl transition-all hover:scale-110 active:scale-95 hidden sm:flex items-center justify-center group border border-white/5"
-      >
-        <FiChevronLeft size={24} md:size={32} className="group-hover:-translate-x-0.5 transition-transform" />
-      </button>
-
-      <button 
-        onClick={nextSlide}
-        className="absolute right-2 md:right-10 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-black/40 hover:bg-primary backdrop-blur-md text-white shadow-2xl transition-all hover:scale-110 active:scale-95 hidden sm:flex items-center justify-center group border border-white/5"
-      >
-        <FiChevronRight size={24} md:size={32} className="group-hover:translate-x-0.5 transition-transform" />
-      </button>
-
-      {/* Bottom Controls Bar */}
-      <div className="absolute bottom-6 md:bottom-10 left-0 w-full z-30 px-4 md:px-10 lg:px-20">
-        <div className="flex items-center justify-between">
-          {/* Page Counter (Bottom Left) */}
-          <div className="flex items-center space-x-2 font-black text-[9px] md:text-xs tracking-widest uppercase">
-            <span className="text-primary">{(currentIndex + 1).toString().padStart(2, '0')}</span>
-            <span className="text-neutral-500">/</span>
-            <span className="text-white/60">{movies.length.toString().padStart(2, '0')}</span>
-          </div>
-
-          {/* Indicators (Bottom Right) */}
-          <div className="flex items-center space-x-1.5 md:space-x-2">
-            {movies.slice(0, 6).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => {
-                  setDirection(i > currentIndex ? 1 : -1);
-                  setCurrentIndex(i);
-                }}
-                className={`h-1 md:h-1.5 rounded-full transition-all duration-700 ${
-                  i === currentIndex 
-                    ? 'w-6 md:w-10 bg-primary shadow-[0_0_20px_rgba(229,9,20,0.6)]' 
-                    : 'w-2 md:w-3 bg-neutral-700 hover:bg-neutral-500'
-                }`}
-              />
-            ))}
-          </div>
-        </div>
+      <div className="absolute bottom-5 md:bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-2 md:gap-3">
+        {movies.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => {
+              setCurrentIndex(index);
+              resetTimer();
+            }}
+            className={`transition-all rounded-full ${
+              index === currentIndex 
+                ? 'w-8 md:w-10 h-2 md:h-3 bg-primary' 
+                : 'w-2 md:w-3 h-2 md:h-3 bg-white/30 hover:bg-white/50'
+            }`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
       </div>
     </div>
   );
 };
 
-export default memo(BannerSlider);
+export default BannerSlider;
