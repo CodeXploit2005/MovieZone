@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FiLogOut, FiMenu, FiX, FiSearch, FiChevronDown, FiSun, FiMoon, FiUser, FiHeart } from 'react-icons/fi';
+import { 
+  FiLogOut, FiMenu, FiX, FiSearch, 
+  FiChevronDown, FiSun, FiMoon, FiUser, FiHeart 
+} from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import Avatar from '../common/Avatar';
@@ -22,7 +25,6 @@ const Navbar = () => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<any[]>([]);
-  const [isSuggestionsHovered, setIsSuggestionsHovered] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -45,6 +47,10 @@ const Navbar = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -75,12 +81,13 @@ const Navbar = () => {
       navigate(`/search?q=${searchQuery}`);
       setSuggestions([]);
       setSearchQuery('');
+      setIsMobileMenuOpen(false);
     }
   };
 
   const genres = [
     t('genre_action'), t('genre_historical'), t('genre_war'), t('genre_scifi'), 
-    t('genre_horror'), t('genre_comedy'), t('genre_animation'), t('genre_drama')
+    t('genre_horror'), t('genre_comedy'), t('genre_anime'), t('genre_drama')
   ];
   const countries = [
     t('country_china'), t('country_korea'), t('country_japan'), t('country_usa'), 
@@ -97,22 +104,18 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`fixed top-0 w-full h-[70px] z-[1000] transition-all duration-300 flex items-center px-4 md:px-10 border-b ${
+    <nav className={`fixed top-0 left-0 right-0 w-full h-[70px] z-50 transition-all duration-300 flex items-center justify-between px-4 md:px-10 border-b ${
       isScrolled 
         ? `${theme === 'dark' ? 'bg-[#0a0a0a]/95 border-zinc-800 shadow-xl backdrop-blur-md' : 'bg-white/95 border-gray-200 shadow-md backdrop-blur-md'}` 
         : `${theme === 'dark' ? 'bg-[#0a0a0a]/90 border-transparent' : 'bg-white border-transparent shadow-sm'}`
     }`}>
-      {/* 1. Logo Section */}
-      <div className="flex-shrink-0">
-        <Link to="/" className="group flex items-center">
-          <h1 className="text-2xl font-[1000] tracking-tighter">
-            <span className="text-primary">MOVIE</span>
-            <span className={`${theme === 'dark' ? 'text-white' : 'text-dark'}`}>ZONE</span>
-          </h1>
-        </Link>
-      </div>
+      <Link to="/" className="group flex items-center">
+        <h1 className="text-2xl font-[1000] tracking-tighter">
+          <span className="text-primary">MOVIE</span>
+          <span className={`${theme === 'dark' ? 'text-white' : 'text-dark'}`}>ZONE</span>
+        </h1>
+      </Link>
 
-      {/* 2. Main Menu */}
       <div className="hidden lg:flex items-center ml-12 space-x-7 text-[13px] font-black uppercase tracking-wider">
         {navLinks.map((link) => (
           (!link.protected || user) && (
@@ -169,10 +172,7 @@ const Navbar = () => {
         ))}
       </div>
 
-      {/* 3. Right Section */}
       <div className="flex-1 flex items-center justify-end space-x-2 md:space-x-5">
-        
-        {/* Search Bar - Hidden on mobile, shown on md+ */}
         <div className="relative hidden md:flex items-center group">
           <form onSubmit={handleSearchSubmit}>
             <input 
@@ -180,36 +180,23 @@ const Navbar = () => {
               placeholder={t('search_placeholder')} 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className={`
-                rounded-full py-1.5 pl-4 pr-10 outline-none transition-all duration-500 ease-in-out font-bold text-sm
-                w-[120px] lg:w-[180px] hover:w-[200px] focus:w-[250px] xl:focus:w-[300px]
-                ${theme === 'dark' 
-                  ? 'bg-zinc-900/60 border border-zinc-700 text-white placeholder:text-zinc-600 focus:border-primary focus:bg-zinc-900 focus:shadow-[0_0_20px_rgba(220,38,38,0.2)]' 
+              className={`rounded-full py-1.5 pl-4 pr-10 outline-none transition-all duration-500 ease-in-out font-bold text-sm w-[120px] lg:w-[180px] hover:w-[200px] focus:w-[250px] xl:focus:w-[300px] ${
+                theme === 'dark' 
+                  ? 'bg-zinc-900/60 border border-zinc-700 text-white placeholder:text-zinc-600 focus:border-primary focus:bg-zinc-900 focus:shadow-[0_0_20px_rgba(220,38,38,0.3)]' 
                   : 'bg-gray-100 border border-gray-200 text-dark placeholder:text-gray-400 focus:border-primary focus:bg-white focus:shadow-[0_0_15px_rgba(220,38,38,0.1)]'
-                }
-              `}
+              }`}
             />
             <FiSearch className={`absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-300 ${
               theme === 'dark' ? 'text-zinc-500' : 'text-gray-400'
             } group-focus-within:text-primary`} size={16} />
           </form>
-
-          {/* Suggestions Dropdown */}
           <AnimatePresence>
             {suggestions.length > 0 && (
               <motion.div 
                 initial={{ opacity: 0, y: 10, scale: 0.98 }} 
-                animate={{ 
-                  opacity: 1, 
-                  y: 0, 
-                  scale: 1,
-                  width: isSuggestionsHovered ? (window.innerWidth >= 1280 ? 400 : 350) : (window.innerWidth >= 1280 ? 300 : 280)
-                }} 
+                animate={{ opacity: 1, y: 0, scale: 1 }} 
                 exit={{ opacity: 0, y: 10, scale: 0.98 }} 
-                onMouseEnter={() => setIsSuggestionsHovered(true)}
-                onMouseLeave={() => setIsSuggestionsHovered(false)}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
-                className={`absolute top-full mt-4 right-0 border rounded-2xl shadow-2xl overflow-hidden z-[120] transition-shadow duration-300 hover:shadow-primary/20 ${
+                className={`absolute top-full mt-4 right-0 border rounded-2xl shadow-2xl overflow-hidden z-[60] transition-shadow duration-500 hover:shadow-primary/20 ${
                   theme === 'dark' ? 'bg-[#0f0f0f] border-zinc-800' : 'bg-white border-gray-100'
                 }`}
               >
@@ -222,54 +209,35 @@ const Navbar = () => {
                         setSuggestions([]);
                         setSearchQuery('');
                       }} 
-                      className={`flex items-center space-x-4 p-2.5 rounded-xl transition-all group/item ${
+                      className={`flex items-center space-x-4 p-2.5 rounded-xl transition-all ${
                         theme === 'dark' ? 'hover:bg-white/5' : 'hover:bg-gray-50'
                       }`}
                     >
-                      <div className="relative flex-shrink-0 overflow-hidden rounded-lg shadow-lg w-10 h-14">
+                      <div className="relative flex-shrink-0 overflow-hidden rounded-xl shadow-lg w-10 h-14">
                         <img 
                           src={movie.poster_path ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` : 'https://placehold.co/92x138/1a1a1a/e50914?text=No+Poster'} 
-                          className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500" 
+                          className="w-full h-full object-cover" 
                           alt={movie.title} 
                         />
                       </div>
                       <div className="flex-grow">
-                        <p className={`text-[13px] font-bold group-hover/item:text-primary transition-colors line-clamp-1 mb-0.5 ${
+                        <p className={`text-[11px] font-bold line-clamp-1 mb-0.5 ${
                           theme === 'dark' ? 'text-white' : 'text-dark'
                         }`}>{movie.title}</p>
                         <div className="flex items-center gap-2">
-                          <span className={`text-[11px] font-semibold ${
+                          <span className={`text-[9px] font-semibold ${
                             theme === 'dark' ? 'text-neutral-500' : 'text-gray-400'
                           }`}>{movie.release_date?.split('-')[0]}</span>
-                          <span className="w-1 h-1 rounded-full bg-neutral-600" />
-                          <span className="text-[11px] font-black text-primary">{movie.vote_average?.toFixed(1)}</span>
                         </div>
                       </div>
                     </Link>
                   ))}
-                  
-                  {/* Explore More Item */}
-                  <Link 
-                    to={`/search?q=${searchQuery}`}
-                    onClick={() => {
-                      setSuggestions([]);
-                      setSearchQuery('');
-                    }}
-                    className={`flex items-center justify-center p-3 mt-1 rounded-xl transition-all font-bold text-xs uppercase tracking-widest ${
-                      theme === 'dark' 
-                        ? 'bg-white/5 text-zinc-400 hover:bg-primary hover:text-white' 
-                        : 'bg-gray-50 text-gray-500 hover:bg-primary hover:text-white'
-                    }`}
-                  >
-                     <span>{t('explore_more')}</span>
-                   </Link>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-        {/* Theme & Language Controls - Hidden on mobile, shown on md+ */}
         <div className="hidden md:flex items-center space-x-2">
           <button 
             onClick={toggleTheme} 
@@ -286,41 +254,22 @@ const Navbar = () => {
               theme === 'dark' ? 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:bg-zinc-700' : 'bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200'
             }`}
           >
-            {lang === 'vi' ? 'VN | ' : 'US | '}
-            <span className={theme === 'dark' ? 'text-white' : 'text-primary'}>
-              {lang === 'vi' ? 'VI' : 'EN'}
-            </span>
+            {lang === 'vi' ? 'VN | VI' : 'US | EN'}
           </button>
         </div>
 
-        {/* User Profile Area */}
         {user ? (
           <div className="relative user-menu-container">
             <div 
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
               className="flex items-center space-x-3 cursor-pointer group"
             >
-              <div className="relative">
-                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-primary overflow-hidden p-0.5 shadow-lg shadow-primary/20 transition-transform group-hover:scale-105">
-                  <Avatar 
-                    src={user.avatar} 
-                    alt={user.username}
-                    size={40}
-                    className="w-full h-full rounded-full object-cover" 
-                  />
-                </div>
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 md:w-3 md:h-3 bg-green-500 border-2 border-[#0a0a0a] rounded-full shadow-[0_0_10px_rgba(34,197,94,0.5)]"></span>
-              </div>
-              <div className="hidden xl:flex items-center space-x-2">
-                <div className="text-left leading-tight">
-                  <p className={`text-[9px] font-bold uppercase opacity-50 ${theme === 'dark' ? 'text-white' : 'text-dark'}`}>{t('welcome')}</p>
-                  <p className={`text-[13px] font-black tracking-tight ${theme === 'dark' ? 'text-white' : 'text-dark'}`}>{user.username}</p>
-                </div>
-                <FiChevronDown 
-                  className={`transition-transform duration-300 ${isUserMenuOpen ? 'rotate-180' : ''} ${
-                    theme === 'dark' ? 'text-white/50 group-hover:text-white' : 'text-dark/50 group-hover:text-dark'
-                  }`} 
-                  size={16} 
+              <div className="w-10 h-10 rounded-full border-2 border-primary overflow-hidden p-0.5 shadow-lg shadow-primary/20 transition-transform group-hover:scale-105">
+                <Avatar 
+                  src={user.avatar} 
+                  alt={user.username}
+                  size={40}
+                  className="w-full h-full rounded-full object-cover" 
                 />
               </div>
             </div>
@@ -331,7 +280,7 @@ const Navbar = () => {
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className={`absolute right-0 mt-2 w-52 border rounded-xl shadow-2xl overflow-hidden z-[120] ${
+                  className={`absolute right-0 mt-2 w-56 border rounded-xl shadow-2xl overflow-hidden z-[60] ${
                     theme === 'dark' ? 'bg-[#121212] border-zinc-800' : 'bg-white border-gray-100'
                   }`}
                 >
@@ -339,24 +288,23 @@ const Navbar = () => {
                     <Link 
                       to="/profile" 
                       onClick={() => setIsUserMenuOpen(false)}
-                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-bold transition group ${
+                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-bold transition ${
                         theme === 'dark' ? 'text-zinc-300 hover:bg-zinc-800' : 'text-dark hover:bg-gray-50'
                       }`}
                     >
-                      <FiUser size={18} className="group-hover:text-primary transition-colors" />
+                      <FiUser size={18} />
                       <span>{t('profile')}</span>
                     </Link>
                     <Link 
                       to="/favorites" 
                       onClick={() => setIsUserMenuOpen(false)}
-                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-bold transition group ${
+                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-bold transition ${
                         theme === 'dark' ? 'text-zinc-300 hover:bg-zinc-800' : 'text-dark hover:bg-gray-50'
                       }`}
                     >
-                      <FiHeart size={18} className="group-hover:text-primary transition-colors" />
+                      <FiHeart size={18} />
                       <span>{t('favorites')}</span>
                     </Link>
-                    <div className={`h-[1px] my-1 mx-2 ${theme === 'dark' ? 'bg-zinc-800' : 'bg-gray-100'}`}></div>
                     <button 
                       onClick={() => {
                         setIsUserMenuOpen(false);
@@ -376,30 +324,70 @@ const Navbar = () => {
           </div>
         ) : (
           <div className="flex items-center space-x-2 md:space-x-4">
-            <Link to="/login" className={`text-[10px] md:text-[12px] font-bold hover:text-primary transition-colors ${theme === 'dark' ? 'text-white' : 'text-dark'}`}>{t('login')}</Link>
+            <Link to="/login" className={`text-[10px] md:text-[12px] font-bold hover:text-primary transition-colors ${
+              theme === 'dark' ? 'text-white' : 'text-dark'
+            }`}>{t('login')}</Link>
             <Link to="/register" className="bg-primary text-white px-3 md:px-5 py-1.5 rounded-full text-[10px] md:text-[12px] font-bold hover:bg-red-700 transition-all shadow-lg shadow-primary/20">{t('register')}</Link>
           </div>
         )}
+
+        <button 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+          className={`lg:hidden p-3 rounded-full transition-all hover:scale-110 ${
+            theme === 'dark' ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-gray-100 hover:bg-gray-200 text-dark'
+          }`}
+        >
+          {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+        </button>
       </div>
 
-      <button className="text-white ml-2 md:ml-4 lg:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-        <FiMenu size={24} className={theme === 'dark' ? 'text-white' : 'text-dark'} />
-      </button>
-
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div initial={{ opacity: 0, x: '100%' }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: '100%' }} className={`lg:hidden fixed inset-0 z-[1100] p-6 overflow-y-auto transition-colors ${theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-white'}`}>
+          <motion.div 
+            initial={{ opacity: 0, x: '100%' }} 
+            animate={{ opacity: 1, x: 0 }} 
+            exit={{ opacity: 0, x: '100%' }} 
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className={`lg:hidden fixed top-0 left-0 w-full h-full z-[1000] p-6 overflow-y-auto transition-colors ${
+              theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-white'
+            }`}
+          >
             <div className="flex justify-between items-center mb-10">
-              <span className="text-2xl font-black text-primary">MOVIEZONE</span>
-              <div className="flex items-center space-x-4">
-                <button onClick={toggleTheme} className={`p-2 rounded-full ${theme === 'dark' ? 'bg-white/5 text-yellow-500' : 'bg-gray-100 text-blue-600'}`}>{theme === 'dark' ? <FiSun size={24} /> : <FiMoon size={24} />}</button>
-                <button onClick={() => setIsMobileMenuOpen(false)} className={theme === 'dark' ? 'text-white' : 'text-dark'}><FiX size={32} /></button>
+              <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="group flex items-center">
+                <h1 className="text-2xl font-[1000] tracking-tighter">
+                  <span className="text-primary">MOVIE</span>
+                  <span className={`${theme === 'dark' ? 'text-white' : 'text-dark'}`}>ZONE</span>
+                </h1>
+              </Link>
+              <div className="flex items-center space-x-2">
+                <button 
+                  onClick={toggleTheme} 
+                  className={`p-3 rounded-full transition-all hover:scale-110 ${
+                    theme === 'dark' ? 'bg-white/10 text-yellow-500' : 'bg-gray-100 text-blue-600'
+                  }`}
+                >
+                  {theme === 'dark' ? <FiSun size={24} /> : <FiMoon size={24} />}
+                </button>
+                <button 
+                  onClick={toggleLang}
+                  className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${
+                    theme === 'dark' ? 'bg-zinc-800 text-white border border-zinc-700' : 'bg-white text-primary border border-gray-200'
+                  }`}
+                >
+                  {lang === 'vi' ? 'VI' : 'EN'}
+                </button>
+                <button 
+                  onClick={() => setIsMobileMenuOpen(false)} 
+                  className={`p-3 rounded-full transition-all hover:bg-white/10 ${
+                    theme === 'dark' ? 'text-white' : 'text-dark'
+                  }`}
+                >
+                  <FiX size={28} />
+                </button>
               </div>
             </div>
 
-            {/* Mobile Search */}
-            <div className="mb-8">
+            <div className="mb-8 relative">
               <form onSubmit={handleSearchSubmit} className="relative">
                 <input 
                   type="text" 
@@ -415,19 +403,6 @@ const Navbar = () => {
             </div>
 
             <div className="space-y-6">
-              {/* Language Switcher in Mobile Menu */}
-              <div className="flex items-center justify-between p-4 rounded-2xl bg-primary/5 border border-primary/10">
-                <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-dark'}`}>{t('language')}</span>
-                <button 
-                  onClick={toggleLang}
-                  className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${
-                    theme === 'dark' ? 'bg-zinc-800 text-white border border-zinc-700' : 'bg-white text-primary border border-gray-200'
-                  }`}
-                >
-                  {lang === 'vi' ? 'Tiếng Việt' : 'English'}
-                </button>
-              </div>
-
               {navLinks.map((link) => (
                 <div key={link.name}>
                   {link.type === 'dropdown' ? (
@@ -435,13 +410,17 @@ const Navbar = () => {
                       <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500">{link.name}</p>
                       <div className="grid grid-cols-2 gap-3">
                         {link.items?.map(item => (
-                          <Link key={item} to={`/search?q=${item}`} onClick={() => setIsMobileMenuOpen(false)} className={`text-sm font-bold p-3 rounded-xl transition-colors ${theme === 'dark' ? 'bg-white/5 text-neutral-300' : 'bg-gray-50 text-neutral-600'}`}>{item}</Link>
+                          <Link key={item} to={`/search?q=${item}`} onClick={() => setIsMobileMenuOpen(false)} className={`text-sm font-bold p-3 rounded-xl transition-colors ${
+                            theme === 'dark' ? 'bg-white/5 text-neutral-300' : 'bg-gray-50 text-neutral-600'
+                          }`}>{item}</Link>
                         ))}
                       </div>
                     </div>
                   ) : (
                     (!link.protected || user) && (
-                      <Link to={link.path || '#'} onClick={() => setIsMobileMenuOpen(false)} className={`text-xl font-bold block ${theme === 'dark' ? 'text-white' : 'text-dark'}`}>{link.name}</Link>
+                      <Link to={link.path || '#'} onClick={() => setIsMobileMenuOpen(false)} className={`text-xl font-bold block ${
+                        theme === 'dark' ? 'text-white' : 'text-dark'
+                      }`}>{link.name}</Link>
                     )
                   )}
                 </div>
@@ -449,7 +428,9 @@ const Navbar = () => {
               <div className={`h-[1px] w-full ${theme === 'dark' ? 'bg-white/5' : 'bg-gray-100'}`}></div>
               {user ? (
                 <div className="space-y-4">
-                  <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)} className={`text-xl font-bold block ${theme === 'dark' ? 'text-white' : 'text-dark'}`}>{t('profile')}</Link>
+                  <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)} className={`text-xl font-bold block ${
+                    theme === 'dark' ? 'text-white' : 'text-dark'
+                  }`}>{t('profile')}</Link>
                   <button onClick={handleLogout} className="text-primary text-xl font-bold">{t('logout')}</button>
                 </div>
               ) : (
